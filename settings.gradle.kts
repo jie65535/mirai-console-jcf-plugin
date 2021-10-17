@@ -1,0 +1,1 @@
+rootProject.name = "mirai-console-jcf-plugin"
