@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.jie65535.jcf.model.addon.*
 import me.jie65535.jcf.model.addon.file.*
@@ -18,10 +19,9 @@ import me.jie65535.jcf.model.game.*
 import me.jie65535.jcf.model.minecraft.*
 import me.jie65535.jcf.model.minecraft.modloader.*
 import me.jie65535.jcf.util.Date
-import me.jie65535.jcf.util.internal.DateSerializer
 
 @OptIn(ExperimentalSerializationApi::class)
-class CurseClient {
+object CurseClient {
     private val json = Json {
         isLenient = true
         ignoreUnknownKeys = true
@@ -53,7 +53,7 @@ class CurseClient {
     }
 
     suspend fun getGameDatabaseTimestamp(): Date {
-        return json.decodeFromString(http.get("api/v2/game/timestamp"))
+        return http.get("api/v2/game/timestamp")
     }
 
     suspend fun getAddon(projectId: Int): Addon {
@@ -64,7 +64,7 @@ class CurseClient {
         return json.decodeFromString(
             http.post("api/v2/addon") {
                 contentType(ContentType.Application.Json)
-                body = projectIds
+                body = json.encodeToString(projectIds)
             }
         )
     }
@@ -72,7 +72,7 @@ class CurseClient {
     suspend fun getAddons(vararg projectIds: Int): List<Addon> = getAddons(projectIds.toList())
 
     suspend fun getAddonDescription(projectId: Int): String {
-        return json.decodeFromString(http.get("api/v2/addon/$projectId/description"))
+        return http.get("api/v2/addon/$projectId/description")
     }
 
     suspend fun getAddonFiles(projectId: Int): List<AddonFile> {
@@ -83,7 +83,7 @@ class CurseClient {
         return json.decodeFromString(
             http.post("api/v2/addon/files") {
                 contentType(ContentType.Application.Json)
-                body = keys
+                body = json.encodeToString(keys)
             }
         )
     }
@@ -91,7 +91,7 @@ class CurseClient {
     suspend fun getAddonFiles(vararg keys: Int): Map<Int, List<AddonFile>> = getAddonFiles(keys.toList())
 
     suspend fun getAddonFileDownloadUrl(projectId: Int, fileId: Int): String {
-        return json.decodeFromString(http.get("api/v2/addon/$projectId/file/$fileId/download-url"))
+        return http.get("api/v2/addon/$projectId/file/$fileId/download-url")
     }
 
     suspend fun getAddonFile(projectId: Int, fileId: Int): AddonFile {
@@ -106,7 +106,7 @@ class CurseClient {
         sortDescending: Boolean = true,
         gameVersion: String? = null,
         index: Int = 0,
-        pageSize: Int = 1000,
+        pageSize: Int = 10,
         searchFilter: String? = null
     ): List<Addon> {
         return json.decodeFromString(
@@ -134,7 +134,7 @@ class CurseClient {
         return json.decodeFromString(
             http.post("api/v2/addon/featured") {
                 contentType(ContentType.Application.Json)
-                body = FeaturedAddonsRequest(gameId, featuredCount, popularCount, updatedCount, excludedAddons)
+                body = json.encodeToString(FeaturedAddonsRequest(gameId, featuredCount, popularCount, updatedCount, excludedAddons))
             }
         )
     }
@@ -168,14 +168,14 @@ class CurseClient {
     }
 
     suspend fun getCategoryDatabaseTimestamp(): Date {
-        return json.decodeFromString(http.get("api/v2/category/timestamp"))
+        return http.get("api/v2/category/timestamp")
     }
 
     suspend fun getFingerprintMatches(fingerprints: Collection<Long>): FingerprintMatchResult {
         return json.decodeFromString(
             http.post("api/v2/fingerprint") {
                 contentType(ContentType.Application.Json)
-                body = fingerprints
+                body = json.encodeToString(fingerprints)
             }
         )
     }
@@ -186,7 +186,7 @@ class CurseClient {
         return json.decodeFromString(
             http.post("api/v2/fingerprint/fuzzy") {
                 contentType(ContentType.Application.Json)
-                body = FuzzyMatchesRequest(gameId, fingerprints)
+                body = json.encodeToString(FuzzyMatchesRequest(gameId, fingerprints))
             }
         )
     }
@@ -208,7 +208,7 @@ class CurseClient {
     }
 
     suspend fun getModloadersDatabaseTimestamp(): Date {
-        return json.decodeFromString(http.get("api/v2/minecraft/modloader/timestamp"))
+        return http.get("api/v2/minecraft/modloader/timestamp")
     }
 
     suspend fun getMinecraftVersions(): List<MinecraftVersion> {
@@ -220,6 +220,10 @@ class CurseClient {
     }
 
     suspend fun getMinecraftVersionsDatabaseTimestamp(): Date {
-        return json.decodeFromString(http.get("api/v2/minecraft/version/timestamp"))
+        return http.get("api/v2/minecraft/version/timestamp")
+    }
+
+    suspend fun getAddonFileChangeLog(addonId: Int, fileId: Int): String {
+        return http.get("api/v2/addon/${addonId}/file/${fileId}/changelog")
     }
 }

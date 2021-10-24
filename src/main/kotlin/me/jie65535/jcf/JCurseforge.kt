@@ -13,7 +13,10 @@ object JCurseforge : KotlinPlugin(
         version = "0.1.0",
     ) {
         author("jie65535")
-        info("""Curseforge Util""")
+        info("""
+            MC Curseforge Util
+            https://github.com/jie65535/mirai-console-jcf-plugin
+        """.trimIndent())
     }
 ) {
     override fun onEnable() {
