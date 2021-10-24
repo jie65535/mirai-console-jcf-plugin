@@ -1,7 +1,7 @@
 # mirai-console-jcf-plugin
 基于Mirai Console的Curseforge插件
 
----
+## Introduction
 
 允许用户通过`QQ`对[Curseforge](https://www.curseforge.com/)网站进行搜索查询
 
@@ -9,8 +9,13 @@
 
 支持查看文件列表与其下载地址，单独查看文件的更新日志。
 
+## Usage
+- /jcf help    # 帮助
+- /jcf ss \<filter\>    # 直接搜索
+- /jcf sspack \<filter\>    # 搜索整合包
+- /jcf ssmod \<filter\>    # 搜索模组
+- /jcf ssres \<filter\>    # 搜索资源包
 
----
 ## TODO List
 - [x] **搜索资源**
     - [x] 搜索模组
