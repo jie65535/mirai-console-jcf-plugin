@@ -16,6 +16,16 @@
 - /jcf ssmod \<filter\>    # 搜索模组
 - /jcf ssres \<filter\>    # 搜索资源包
 
+## Screenshots
+
+![chat record image](/doc/contact.png)
+
+![show search result image](/doc/show_search_result.png)
+
+![show addon info image](/doc/show_addon_info.png)
+
+![show changelog image](/doc/show_changelog.png)
+
 ## TODO List
 - [x] **搜索资源**
     - [x] 搜索模组
