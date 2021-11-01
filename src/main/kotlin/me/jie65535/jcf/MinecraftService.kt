@@ -148,7 +148,7 @@ object MinecraftService {
             sort = AddonSortMethod.POPULARITY,
             sortDescending = true,
             gameVersion = null,
-            index = pageIndex,
+            index = pageIndex * pageSize,
             pageSize = pageSize,
             searchFilter = filter,
         )

@@ -10,7 +10,7 @@ object JCurseforge : KotlinPlugin(
     JvmPluginDescription(
         id = "me.jie65535.jcf",
         name = "J Curseforge Util",
-        version = "0.1.0",
+        version = "0.1.1",
     ) {
         author("jie65535")
         info("""
