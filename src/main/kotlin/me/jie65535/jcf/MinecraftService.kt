@@ -1,5 +1,7 @@
 package me.jie65535.jcf
 
+import io.ktor.client.features.*
+import io.ktor.http.*
 import kotlinx.coroutines.TimeoutCancellationException
 import me.jie65535.jcf.model.addon.Addon
 import me.jie65535.jcf.model.addon.AddonSortMethod
@@ -75,6 +77,27 @@ object MinecraftService {
 
         // addon handle
         showAddon(sender, addon)
+    }
+
+    /**
+     * 根据项目ID搜索资源
+     */
+    suspend fun searchAddonByProjectId(sender: UserCommandSender, projectId: Int) {
+        try {
+            val addon = curseClient.getAddon(projectId)
+
+            showAddon(sender, addon)
+        } catch (e: ClientRequestException) {
+            if (e.response.status == HttpStatusCode.NotFound) {
+                sender.sendMessage("未搜索到指定项目ID的资源，请使用正确的项目ID")
+            } else {
+                sender.sendMessage("请求异常，错误代码：" + e.response.status)
+                throw e
+            }
+        } catch (e: Throwable) {
+            sender.sendMessage("内部发生异常，此次查询已取消，请重新查询。")
+            throw e
+        }
     }
 
     private suspend fun showAddon(sender: UserCommandSender, addon: Addon) {

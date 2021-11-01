@@ -50,4 +50,9 @@ object JcfCommand : CompositeCommand(
 //        MinecraftService.search(this, MinecraftService.SECTION_ID_WORLDS, filter)
 //    }
 
+    @SubCommand("id")
+    @Description("根据id查找")
+    suspend fun UserCommandSender.getAddonById(projectId: Int) {
+        MinecraftService.searchAddonByProjectId(this, projectId)
+    }
 }
