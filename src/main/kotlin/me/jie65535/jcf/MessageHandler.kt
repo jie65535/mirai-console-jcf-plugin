@@ -41,6 +41,8 @@ object MessageHandler {
             builder.add(contact.bot, PlainText("最新文件列表："))
             parseAddonFiles(addon.latestFiles, builder, contact)
         }
+//        JCurseforge.logger.info(addon.latestFiles.toString())
+//        JCurseforge.logger.info(addon.gameVersionLatestFiles.toString())
         return builder
     }
 
@@ -50,6 +52,9 @@ object MessageHandler {
                     $index | ${file.displayName} [${file.releaseType}] [${file.fileDate.toLocalDate()}]
                     ${file.downloadUrl}
                 """.trimIndent()))
+            // 暂时只允许构造21项
+            if (index >= 20)
+                break
         }
     }
 
