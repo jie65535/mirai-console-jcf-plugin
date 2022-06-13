@@ -1,0 +1,137 @@
+package top.jie65535.jcf
+
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.features.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
+import top.jie65535.jcf.model.mod.*
+import top.jie65535.jcf.model.request.*
+import top.jie65535.jcf.model.request.SortOrder.*
+import top.jie65535.jcf.model.response.*
+
+@OptIn(ExperimentalSerializationApi::class)
+class CurseforgeApi(apiKey: String) {
+    companion object {
+        private const val GAME_ID_MINECRAFT = 432
+    }
+
+    private val json = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+        serializersModule
+    }
+    private val http = HttpClient(OkHttp) {
+        install(HttpTimeout) {
+            this.requestTimeoutMillis = 30_0000
+            this.connectTimeoutMillis = 30_0000
+            this.socketTimeoutMillis = 30_0000
+        }
+        defaultRequest {
+            url.protocol = URLProtocol.HTTPS
+            url.host = "api.curseforge.com"
+            header("accept", "application/json")
+            header("x-api-key", apiKey)
+        }
+    }
+
+    //region Mods
+
+    /**
+     * Get all mods that match the search criteria.
+     * @param gameId Filter by game id.
+     * @param classId Filter by section id (discoverable via Categories)
+     * @param categoryId Filter by category id
+     * @param gameVersion Filter by game version string
+     * @param searchFilter Filter by free text search in the mod name and author
+     * @param sortField Filter by ModsSearchSortField enumeration
+     * @param sortOrder 'asc' if sort is in ascending order, 'desc' if sort is in descending order
+     * @param modLoaderType Filter only mods associated to a given modloader (Forge, Fabric ...). Must be coupled with gameVersion.
+     * @param gameVersionTypeId Filter only mods that contain files tagged with versions of the given gameVersionTypeId
+     * @param slug Filter by slug (coupled with classId will result in a unique result).
+     * @param index A zero based index of the first item to include in the response,
+     * @param pageSize The number of items to include in the response,
+     */
+    suspend fun searchMods(
+        gameId: Int,
+        classId: Int?,
+        categoryId: Int?,
+        gameVersion: String?,
+        searchFilter: String?,
+        sortField: ModsSearchSortField?,
+        sortOrder: SortOrder?,
+        modLoaderType: ModLoaderType?,
+        gameVersionTypeId: Int?,
+        slug: String?,
+        index: Int?,
+        pageSize: Int?
+    ): SearchModsResponse {
+        return json.decodeFromString(
+            http.get("/v1/mods/search") {
+                parameter("gameId", gameId)
+                parameter("classId", classId)
+                parameter("categoryId", categoryId)
+                parameter("gameVersion", gameVersion)
+                parameter("searchFilter", searchFilter)
+                parameter("sortField", sortField)
+                parameter("sortOrder", when(sortOrder){
+                    ASC -> "asc"
+                    DESC -> "asc"
+                    null -> null
+                })
+                parameter("modLoaderType", modLoaderType)
+                parameter("gameVersionTypeId", gameVersionTypeId)
+                parameter("slug", slug)
+                parameter("index", index)
+                parameter("pageSize", pageSize)
+            }
+        )
+    }
+
+    /**
+     * Get a single mod.
+     */
+    suspend fun getMod(modId: Int): GetModResponse {
+        return json.decodeFromString(
+            http.get("/v1/mods/$modId")
+        )
+    }
+
+    /**
+     * Get a list of mods.
+     */
+    suspend fun getMods(modIds: IntArray): GetModsResponse {
+        return json.decodeFromString(
+            http.get("/v1/mods") {
+                body = json.encodeToString(GetModsByIdsListRequestBody(modIds))
+            }
+        )
+    }
+
+    /**
+     * Get a list of featured, popular and recently updated mods.
+     */
+    suspend fun getFeaturedMods(
+        gameId: Int,
+        excludedModIds: IntArray,
+        gameVersionTypeId: Int?
+    ): GetFeaturedModsResponse {
+        return json.decodeFromString(
+            http.get("/v1/mods/featured") {
+                body = json.encodeToString(GetFeaturedModsRequestBody(gameId, excludedModIds, gameVersionTypeId))
+            }
+        )
+    }
+
+    /**
+     * Get the full description of a mod in HTML format.
+     */
+    suspend fun getModDescription(modId: Int): String {
+        return http.get("/v1/mods/$modId/description")
+    }
+
+    //endregion
+
+}
