@@ -5,6 +5,6 @@ import top.jie65535.jcf.model.mod.Mod
 
 @kotlinx.serialization.Serializable
 class SearchModsResponse(
-    val data: Mod,
+    val data: Array<Mod>,
     val pagination: Pagination,
 )

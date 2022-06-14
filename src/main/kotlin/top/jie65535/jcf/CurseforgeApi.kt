@@ -16,6 +16,7 @@ import top.jie65535.jcf.model.response.*
 
 /**
  * [Api docs](https://docs.curseforge.com/)
+ * @author jie65535
  */
 @OptIn(ExperimentalSerializationApi::class)
 class CurseforgeApi(apiKey: String) {
@@ -57,7 +58,7 @@ class CurseforgeApi(apiKey: String) {
      * Specify a game id for a list of all game categories,
      * or a class id for a list of categories under that class.
      */
-    suspend fun getCategories(gameId: Int, classId: Int?): Array<Category> {
+    suspend fun getCategories(gameId: Int, classId: Int? = null): Array<Category> {
         return json.decodeFromString<GetCategoriesResponse>(
             http.get("/v1/categories") {
                 parameter("gameId", gameId)
@@ -87,17 +88,17 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun searchMods(
         gameId: Int,
-        classId: Int?,
-        categoryId: Int?,
-        gameVersion: String?,
-        searchFilter: String?,
-        sortField: ModsSearchSortField?,
-        sortOrder: SortOrder?,
-        modLoaderType: ModLoaderType?,
-        gameVersionTypeId: Int?,
-        slug: String?,
-        index: Int?,
-        pageSize: Int?
+        classId: Int? = null,
+        categoryId: Int? = null,
+        gameVersion: String? = null,
+        searchFilter: String? = null,
+        sortField: ModsSearchSortField? = null,
+        sortOrder: SortOrder? = null,
+        modLoaderType: ModLoaderType? = null,
+        gameVersionTypeId: Int? = null,
+        slug: String? = null,
+        index: Int? = null,
+        pageSize: Int? = null
     ): SearchModsResponse {
         return json.decodeFromString(
             http.get("/v1/mods/search") {
@@ -147,7 +148,7 @@ class CurseforgeApi(apiKey: String) {
     suspend fun getFeaturedMods(
         gameId: Int,
         excludedModIds: IntArray,
-        gameVersionTypeId: Int?
+        gameVersionTypeId: Int? = null
     ): FeaturedModsResponse {
         return json.decodeFromString<GetFeaturedModsResponse>(
             http.get("/v1/mods/featured") {
@@ -183,11 +184,11 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getModFiles(
         modId: Int,
-        gameVersion: String?,
-        modLoaderType: ModLoaderType?,
-        gameVersionTypeId: Int?,
-        index: Int?,
-        pageSize: Int?
+        gameVersion: String? = null,
+        modLoaderType: ModLoaderType? = null,
+        gameVersionTypeId: Int? = null,
+        index: Int? = null,
+        pageSize: Int? = null
     ): GetModFilesResponse {
         return json.decodeFromString(
             http.get("/v1/mods/$modId/files") {
