@@ -7,11 +7,16 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
+import top.jie65535.jcf.model.Category
+import top.jie65535.jcf.model.file.File
 import top.jie65535.jcf.model.mod.*
 import top.jie65535.jcf.model.request.*
 import top.jie65535.jcf.model.request.SortOrder.*
 import top.jie65535.jcf.model.response.*
 
+/**
+ * [Api docs](https://docs.curseforge.com/)
+ */
 @OptIn(ExperimentalSerializationApi::class)
 class CurseforgeApi(apiKey: String) {
     companion object {
@@ -23,6 +28,7 @@ class CurseforgeApi(apiKey: String) {
         ignoreUnknownKeys = true
         serializersModule
     }
+
     private val http = HttpClient(OkHttp) {
         install(HttpTimeout) {
             this.requestTimeoutMillis = 30_0000
@@ -37,7 +43,32 @@ class CurseforgeApi(apiKey: String) {
         }
     }
 
-    //region Mods
+    //region - Game -
+
+    // Minecraft Game ID is 432
+    // Ignore Game APIs
+
+    //endregion
+
+    //region - Categories -
+
+    /**
+     * Get all available classes and categories of the specified game.
+     * Specify a game id for a list of all game categories,
+     * or a class id for a list of categories under that class.
+     */
+    suspend fun getCategories(gameId: Int, classId: Int?): Array<Category> {
+        return json.decodeFromString<GetCategoriesResponse>(
+            http.get("/v1/categories") {
+                parameter("gameId", gameId)
+                parameter("classId", classId)
+            }
+        ).data
+    }
+
+    //endregion
+
+    //region - Mods -
 
     /**
      * Get all mods that match the search criteria.
@@ -93,21 +124,21 @@ class CurseforgeApi(apiKey: String) {
     /**
      * Get a single mod.
      */
-    suspend fun getMod(modId: Int): GetModResponse {
-        return json.decodeFromString(
+    suspend fun getMod(modId: Int): Mod {
+        return json.decodeFromString<GetModResponse>(
             http.get("/v1/mods/$modId")
-        )
+        ).data
     }
 
     /**
      * Get a list of mods.
      */
-    suspend fun getMods(modIds: IntArray): GetModsResponse {
-        return json.decodeFromString(
-            http.get("/v1/mods") {
+    suspend fun getMods(modIds: IntArray): Array<Mod> {
+        return json.decodeFromString<GetModsResponse>(
+            http.post("/v1/mods") {
                 body = json.encodeToString(GetModsByIdsListRequestBody(modIds))
             }
-        )
+        ).data
     }
 
     /**
@@ -117,21 +148,86 @@ class CurseforgeApi(apiKey: String) {
         gameId: Int,
         excludedModIds: IntArray,
         gameVersionTypeId: Int?
-    ): GetFeaturedModsResponse {
-        return json.decodeFromString(
+    ): FeaturedModsResponse {
+        return json.decodeFromString<GetFeaturedModsResponse>(
             http.get("/v1/mods/featured") {
                 body = json.encodeToString(GetFeaturedModsRequestBody(gameId, excludedModIds, gameVersionTypeId))
             }
-        )
+        ).data
     }
 
     /**
      * Get the full description of a mod in HTML format.
      */
     suspend fun getModDescription(modId: Int): String {
-        return http.get("/v1/mods/$modId/description")
+        return json.decodeFromString<StringResponse>(
+            http.get("/v1/mods/$modId/description")
+        ).data
     }
 
     //endregion
 
+    //region - Files -
+
+    /**
+     * Get a single file of the specified mod.
+     */
+    suspend fun getModFile(modId: Int, fileId: Int): File {
+        return json.decodeFromString<GetModFileResponse>(
+            http.get("/v1/mods/$modId/files/$fileId")
+        ).data
+    }
+
+    /**
+     * Get all files of the specified mod.
+     */
+    suspend fun getModFiles(
+        modId: Int,
+        gameVersion: String?,
+        modLoaderType: ModLoaderType?,
+        gameVersionTypeId: Int?,
+        index: Int?,
+        pageSize: Int?
+    ): GetModFilesResponse {
+        return json.decodeFromString(
+            http.get("/v1/mods/$modId/files") {
+                parameter("gameVersion", gameVersion)
+                parameter("modLoaderType", modLoaderType)
+                parameter("gameVersionTypeId", gameVersionTypeId)
+                parameter("index", index)
+                parameter("pageSize", pageSize)
+            }
+        )
+    }
+
+    /**
+     * Get a list of files.
+     */
+    suspend fun getFiles(fileIds: IntArray): Array<File> {
+        return json.decodeFromString<GetFilesResponse>(
+            http.post("/v1/mods/files") {
+                body = json.encodeToString(GetModFilesRequestBody(fileIds))
+            }
+        ).data
+    }
+
+    /**
+     * Get the changelog of a file in HTML format
+     */
+    suspend fun getModFileChangelog(modId: Int, fileId: Int): String {
+        return json.decodeFromString<StringResponse>(
+            http.get("/v1/mods/$modId/files/$fileId/changelog")
+        ).data
+    }
+
+    /**
+     * Get a download url for a specific file
+     */
+    suspend fun getModFileDownloadURL(modId: Int, fileId: Int): String {
+        return json.decodeFromString<StringResponse>(
+            http.get("/v1/mods/$modId/files/$fileId/download-url")
+        ).data
+    }
+
+    //endregion
 }
