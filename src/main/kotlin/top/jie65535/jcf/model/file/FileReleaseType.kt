@@ -9,5 +9,5 @@ enum class FileReleaseType {
     Beta,
     Alpha;
 
-    internal object IndexSerializer : KSerializer<FileReleaseType> by EnumIndexSerializer()
+    internal object IndexSerializer : KSerializer<FileReleaseType> by EnumIndexSerializer(values())
 }

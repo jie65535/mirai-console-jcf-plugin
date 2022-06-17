@@ -24,17 +24,17 @@ class Category(
     /**
      * The category slug as it appear in the URL
      */
-    val slug: String,
+    val slug: String?,
 
     /**
      * 	The category URL
      */
-    val url: String,
+    val url: String?,
 
     /**
      * 	URL for the category icon
      */
-    val iconUrl: String,
+    val iconUrl: String?,
 
     /**
      * Last modified date of the category
@@ -45,20 +45,20 @@ class Category(
     /**
      * 	A top level category for other categories
      */
-    val isClass: Boolean?,
+    val isClass: Boolean? = null,
 
     /**
      * The class id of the category, meaning - the class of which this category is under
      */
-    val classId: Int?,
+    val classId: Int? = null,
 
     /**
      * The parent category for this category
      */
-    val parentCategoryId: Int?,
+    val parentCategoryId: Int? = null,
 
     /**
      * The display index for this category
      */
-    val displayIndex: Int?
+    val displayIndex: Int? = null
 )

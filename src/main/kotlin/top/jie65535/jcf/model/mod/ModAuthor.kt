@@ -4,5 +4,5 @@ package top.jie65535.jcf.model.mod
 class ModAuthor(
     val id: Int,
     val name: String,
-    val url: String,
+    val url: String?,
 )

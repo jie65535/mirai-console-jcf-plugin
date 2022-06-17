@@ -30,5 +30,5 @@ class SortableGameVersion(
     /**
      * Game version type id
      */
-    val gameVersionTypeId: Int?
+    val gameVersionTypeId: Int? = null
 )

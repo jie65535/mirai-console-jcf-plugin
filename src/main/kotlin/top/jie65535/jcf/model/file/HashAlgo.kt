@@ -8,5 +8,5 @@ enum class HashAlgo(val value: Int) {
     Sha1(1),
     Md5(2);
 
-    internal object IndexSerializer : KSerializer<HashAlgo> by EnumIndexSerializer()
+    internal object IndexSerializer : KSerializer<HashAlgo> by EnumIndexSerializer(values())
 }

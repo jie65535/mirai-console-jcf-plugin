@@ -21,5 +21,5 @@ enum class FileStatus{
     AwaitingPublishing,
     FailedPublishing;
 
-    internal object IndexSerializer : KSerializer<FileStatus> by EnumIndexSerializer()
+    internal object IndexSerializer : KSerializer<FileStatus> by EnumIndexSerializer(values())
 }

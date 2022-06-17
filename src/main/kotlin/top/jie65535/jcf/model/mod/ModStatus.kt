@@ -16,5 +16,5 @@ enum class ModStatus {
     Deleted,
     UnderReview;
 
-    internal object IndexSerializer : KSerializer<ModStatus> by EnumIndexSerializer()
+    internal object IndexSerializer : KSerializer<ModStatus> by EnumIndexSerializer(values())
 }

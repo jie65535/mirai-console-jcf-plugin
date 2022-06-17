@@ -9,6 +9,8 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import top.jie65535.jcf.model.Category
 import top.jie65535.jcf.model.file.File
+import top.jie65535.jcf.model.game.Game
+import top.jie65535.jcf.model.game.GameVersionType
 import top.jie65535.jcf.model.mod.*
 import top.jie65535.jcf.model.request.*
 import top.jie65535.jcf.model.request.SortOrder.*
@@ -46,8 +48,54 @@ class CurseforgeApi(apiKey: String) {
 
     //region - Game -
 
-    // Minecraft Game ID is 432
-    // Ignore Game APIs
+    /**
+     * Get all games that are available to the provided API key.
+     */
+    suspend fun getGames(index: Int? = null, pageSize: Int? = null): GetGamesResponse {
+        return json.decodeFromString(
+            http.get("/v1/games") {
+                parameter("index", index)
+                parameter("pageSize", pageSize)
+            }
+        )
+    }
+
+    /**
+     * Get a single game. A private game is only accessible by its respective API key.
+     */
+    suspend fun getGame(gameId: Int): Game {
+        return json.decodeFromString<GetGameResponse>(
+            http.get("/v1/games/$gameId")
+        ).data
+    }
+
+    /**
+     * Get all available versions for each known version type of the specified game.
+     * A private game is only accessible to its respective API key.
+     */
+    suspend fun getVersions(gameId: Int): Array<GameVersionsByType> {
+        return json.decodeFromString<GetVersionsResponse>(
+            http.get("/v1/games/$gameId/versions")
+        ).data
+    }
+
+    /**
+     * Get all available version types of the specified game.
+     *
+     * A private game is only accessible to its respective API key.
+     *
+     * Currently, when creating games via the CurseForge Core Console,
+     * you are limited to a single game version type.
+     * This means that this endpoint is probably not useful in most cases
+     * and is relevant mostly when handling existing games that have
+     * multiple game versions such as World of Warcraft and Minecraft
+     * (e.g. 517 for wow_retail).
+     */
+    suspend fun getVersionTypes(gameId: Int): Array<GameVersionType> {
+        return json.decodeFromString<GetVersionTypesResponse>(
+            http.get("/v1/games/$gameId/versions")
+        ).data
+    }
 
     //endregion
 
@@ -137,6 +185,7 @@ class CurseforgeApi(apiKey: String) {
     suspend fun getMods(modIds: IntArray): Array<Mod> {
         return json.decodeFromString<GetModsResponse>(
             http.post("/v1/mods") {
+                headers.append("Content-Type", "application/json")
                 body = json.encodeToString(GetModsByIdsListRequestBody(modIds))
             }
         ).data
@@ -147,11 +196,12 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getFeaturedMods(
         gameId: Int,
-        excludedModIds: IntArray,
+        excludedModIds: IntArray = intArrayOf(),
         gameVersionTypeId: Int? = null
     ): FeaturedModsResponse {
         return json.decodeFromString<GetFeaturedModsResponse>(
             http.get("/v1/mods/featured") {
+                headers.append("Content-Type", "application/json")
                 body = json.encodeToString(GetFeaturedModsRequestBody(gameId, excludedModIds, gameVersionTypeId))
             }
         ).data
@@ -207,6 +257,7 @@ class CurseforgeApi(apiKey: String) {
     suspend fun getFiles(fileIds: IntArray): Array<File> {
         return json.decodeFromString<GetFilesResponse>(
             http.post("/v1/mods/files") {
+                headers.append("Content-Type", "application/json")
                 body = json.encodeToString(GetModFilesRequestBody(fileIds))
             }
         ).data

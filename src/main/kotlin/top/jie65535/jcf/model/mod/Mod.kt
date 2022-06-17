@@ -27,7 +27,7 @@ class Mod(
     /**
      * The mod slug that would appear in the URL
      */
-    val slug: String,
+    val slug: String?,
 
     /**
      * 	Relevant links for the mod such as Issue tracker and Wiki
@@ -67,7 +67,7 @@ class Mod(
     /**
      * The class id this mod belongs to
      */
-    val classId: Int?,
+    val classId: Int? = null,
 
     /**
      * List of the mod's authors
@@ -120,7 +120,7 @@ class Mod(
     /**
      * Is mod allowed to be distributed
      */
-    val allowModDistribution: Boolean?,
+    val allowModDistribution: Boolean? = null,
 
     /**
      * The mod popularity rank for the game

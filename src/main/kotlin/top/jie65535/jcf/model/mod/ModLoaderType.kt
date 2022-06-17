@@ -12,5 +12,5 @@ enum class ModLoaderType {
     Fabric,
     Quilt;
 
-    internal object IndexSerializer : KSerializer<ModLoaderType> by EnumIndexSerializer()
+    internal object IndexSerializer : KSerializer<ModLoaderType> by EnumIndexSerializer(values())
 }

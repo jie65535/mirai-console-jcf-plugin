@@ -4,5 +4,5 @@ package top.jie65535.jcf.model.request
 class GetFeaturedModsRequestBody(
     val gameId: Int,
     val excludedModIds: IntArray,
-    val gameVersionTypeId: Int?,
+    val gameVersionTypeId: Int? = null,
 )

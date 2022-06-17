@@ -8,6 +8,6 @@ class FileIndex(
     val fileId: Int,
     val filename: String,
     val releaseType: FileReleaseType,
-    val gameVersionTypeId: Int?,
-    val modLoader: ModLoaderType,
+    val gameVersionTypeId: Int? = null,
+    val modLoader: ModLoaderType? = null,
 )

@@ -12,5 +12,5 @@ enum class FileRelationType {
     Incompatible,
     Include;
 
-    internal object IndexSerializer : KSerializer<FileRelationType> by EnumIndexSerializer()
+    internal object IndexSerializer : KSerializer<FileRelationType> by EnumIndexSerializer(values())
 }

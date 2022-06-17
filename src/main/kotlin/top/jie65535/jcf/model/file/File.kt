@@ -59,7 +59,7 @@ class File(
     /**
      * 	The file download URL
      */
-    val downloadUrl: String,
+    val downloadUrl: String?,
     /**
      * 	List of game versions this file is relevant for
      */
@@ -75,23 +75,23 @@ class File(
     /**
      * 	none
      */
-    val exposeAsAlternative: Boolean?,
+    val exposeAsAlternative: Boolean? = null,
     /**
      * 	none
      */
-    val parentProjectFileId: Int?,
+    val parentProjectFileId: Int? = null,
     /**
      * 	none
      */
-    val alternateFileId: Int?,
+    val alternateFileId: Int? = null,
     /**
      * 	none
      */
-    val isServerPack: Boolean?,
+    val isServerPack: Boolean? = null,
     /**
      * 	none
      */
-    val serverPackFileId: Int?,
+    val serverPackFileId: Int? = null,
     /**
      * 	none
      */

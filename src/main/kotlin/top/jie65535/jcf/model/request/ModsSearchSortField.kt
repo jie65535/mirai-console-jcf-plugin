@@ -14,5 +14,5 @@ enum class ModsSearchSortField {
      Category,
      GameVersion;
 
-     internal object IndexSerializer : KSerializer<ModsSearchSortField> by EnumIndexSerializer()
+     internal object IndexSerializer : KSerializer<ModsSearchSortField> by EnumIndexSerializer(values())
 }
