@@ -9,15 +9,48 @@ import top.jie65535.jcf.util.PagedList
 class MinecraftService(apiKey: String) {
     companion object {
         private const val GAME_ID_MINECRAFT = 432
-        private const val CLASS_ID_WORLDS = 17
-        private const val CLASS_ID_BUKKIT_PLUGINS = 5
-        private const val CLASS_ID_CUSTOMIZATION = 4546
-        private const val CLASS_ID_MODPACKS = 4471
-        private const val CLASS_ID_RESOURCE_PACKS = 12
-        private const val CLASS_ID_ADDONS = 4559
-        private const val CLASS_ID_MODS = 6
         private const val DEFAULT_PAGE_SIZE = 20
         private val DEFAULT_SORT_FIELD = ModsSearchSortField.Popularity
+    }
+
+    /**
+     * mod分类
+     */
+    enum class ModClass(val classId: Int) {
+        /**
+         * 存档
+         */
+        WORLDS(17),
+
+        /**
+         * 水桶服插件
+         */
+        BUKKIT_PLUGINS(5),
+
+        /**
+         * 自定义
+         */
+        CUSTOMIZATION(4546),
+
+        /**
+         * 整合包
+         */
+        MODPACKS(4471),
+
+        /**
+         * 资源包
+         */
+        RESOURCE_PACKS(12),
+
+        /**
+         * 附加
+         */
+        ADDONS(4559),
+
+        /**
+         * 模组
+         */
+        MODS(6);
     }
 
     /**
@@ -26,40 +59,16 @@ class MinecraftService(apiKey: String) {
     private val api = CurseforgeApi(apiKey)
 
     /**
-     * 搜索存档
-     */
-    suspend fun searchWords(filter: String): PagedList<Mod> =
-        doSearch(CLASS_ID_WORLDS, filter)
-
-    /**
-     * 搜索资源包（材质包、光影之类的）
-     */
-    suspend fun searchResourcePacks(filter: String): PagedList<Mod> =
-        doSearch(CLASS_ID_RESOURCE_PACKS, filter)
-
-    /**
-     * 搜索整合包
-     */
-    suspend fun searchModPacks(filter: String): PagedList<Mod> =
-        doSearch(CLASS_ID_MODPACKS, filter)
-
-    /**
-     * 搜索mod
-     */
-    suspend fun searchMods(filter: String): PagedList<Mod> =
-        doSearch(CLASS_ID_MODS, filter)
-
-    /**
      * 根据分类与过滤器进行搜索，返回分页的列表
-     * @param classId 类别ID
+     * @param modClass mod分类
      * @param filter 过滤器
      * @return 模组分页列表
      */
-    private suspend fun doSearch(classId: Int, filter: String): PagedList<Mod> =
+    fun search(modClass: ModClass, filter: String): PagedList<Mod> =
         PagedList(DEFAULT_PAGE_SIZE) { index ->
             val response = api.searchMods(
                 GAME_ID_MINECRAFT,
-                classId,
+                modClass.classId,
                 searchFilter = filter,
                 sortField = DEFAULT_SORT_FIELD,
                 sortOrder = SortOrder.DESC,
