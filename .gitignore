@@ -120,3 +120,9 @@ run/
 # Local Test Launch point
 src/test/kotlin/RunTerminal.kt
 /api_key.txt
+/config
+/data
+/logs
+/plugin-libraries
+/plugin-shared-libraries
+/plugins
