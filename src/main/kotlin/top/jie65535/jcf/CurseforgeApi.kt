@@ -158,7 +158,7 @@ class CurseforgeApi(apiKey: String) {
                 parameter("sortField", sortField)
                 parameter("sortOrder", when(sortOrder){
                     ASC -> "asc"
-                    DESC -> "asc"
+                    DESC -> "desc"
                     null -> null
                 })
                 parameter("modLoaderType", modLoaderType)
