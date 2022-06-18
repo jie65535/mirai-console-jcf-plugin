@@ -10,8 +10,9 @@ class PagedList<T>(
 ) {
     private val pages = mutableListOf<Array<T>>()
     private var pageIndex = 0
-    private var hasNext = false
-    fun getHasNext() = hasNext
+    private var _hasNext = false
+    val hasNext get() = _hasNext
+    val hasPrev get() = pageIndex > 0
 
     suspend fun prev(): Array<T> {
         if (pageIndex > 0) {
@@ -21,7 +22,7 @@ class PagedList<T>(
     }
 
     suspend fun next(): Array<T> {
-        if (hasNext) {
+        if (_hasNext) {
             pageIndex++
         }
         return current()
@@ -32,7 +33,7 @@ class PagedList<T>(
             pages[pageIndex]
         } else {
             val data = getPageData(pageIndex)
-            hasNext = data.size == pageSize
+            _hasNext = data.size == pageSize
             pages.add(data)
             data
         }
