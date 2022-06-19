@@ -87,11 +87,11 @@ class MessageHandler(
                 }
                 isContinue = true
             } catch (e: TimeoutCancellationException) {
-                sender.sendMessage("等待回复超时，请重新查询。")
+                subject.sendMessage("等待回复超时，请重新查询。")
             } catch (e: NumberFormatException) {
-                sender.sendMessage("请回复正确的选项，此次查询已取消，请重新查询。")
+                subject.sendMessage("请回复正确的选项，此次查询已取消，请重新查询。")
             } catch (e: IndexOutOfBoundsException) {
-                sender.sendMessage("请回复正确的序号，此次查询已取消，请重新查询。")
+                subject.sendMessage("请回复正确的序号，此次查询已取消，请重新查询。")
             } catch (e: Throwable) {
                 subject.sendMessage(message.quote() + "发生内部错误，请稍后重试")
                 logger.warning("回复消息\"$message\"引发意外的异常", e)
