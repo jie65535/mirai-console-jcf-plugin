@@ -14,7 +14,7 @@ object PluginConfig : AutoSavePluginConfig("JCurseforgeConfig") {
             MinecraftService.ModClass.MODS          to "cfmod ",
             MinecraftService.ModClass.MODPACKS      to "cfpack ",
             MinecraftService.ModClass.RESOURCE_PACKS to "cfres ",
-            MinecraftService.ModClass.WORLDS        to "cfword ",
+            MinecraftService.ModClass.WORLDS        to "cfworld ",
             MinecraftService.ModClass.BUKKIT_PLUGINS to "cfbukkit ",
             MinecraftService.ModClass.ADDONS        to "cfaddon ",
             MinecraftService.ModClass.CUSTOMIZATION to "cfcustom ",
