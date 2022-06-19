@@ -77,7 +77,7 @@ class Mod(
     /**
      * The mod's logo asset
      */
-    val logo: ModAsset,
+    val logo: ModAsset?,
 
     /**
      * List of screenshots assets

@@ -109,7 +109,7 @@ class MessageHandler(
         val selectedMod = handlePagedList(pagedList) { mod ->
             PlainText(
                 """
-                    [${mod.name}] by ${mod.authors[0].name}
+                    [${mod.name}] by ${mod.authors.firstOrNull()?.name}
                     ${formatCount(mod.downloadCount)} Downloads  Updated ${mod.dateModified.toLocalDate()}
                     ${mod.summary}
                     ${mod.links.websiteUrl}
