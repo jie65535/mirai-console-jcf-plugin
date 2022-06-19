@@ -6,7 +6,7 @@ plugins {
     id("net.mamoe.mirai-console") version "2.11.1"
 }
 
-group = "top.jie65535"
+group = "top.jie65535.jcf"
 version = "1.0.0"
 
 repositories {

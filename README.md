@@ -1,6 +1,8 @@
 # mirai-console-jcf-plugin
 基于Mirai Console的Curseforge插件
 
+# 请注意：本插件需要申请 [Curseforge Api Key](https://console.curseforge.com/) 才可使用！！
+
 ## Introduction
 
 允许用户通过`QQ`对[Curseforge](https://www.curseforge.com/)网站进行搜索查询
@@ -10,12 +12,18 @@
 支持查看文件列表与其下载地址，单独查看文件的更新日志。
 
 ## Usage
-- /jcf id <projectId>    # 根据id查找
-- /jcf help    # 帮助
-- /jcf ss \<filter\>    # 直接搜索
-- /jcf sspack \<filter\>    # 搜索整合包
-- /jcf ssmod \<filter\>    # 搜索模组
-- /jcf ssres \<filter\>    # 搜索资源包
+指令
+- /jcf help # 查看帮助
+- /jcf setApiKey # 设置Curseforge API Key
+
+分类搜索命令（可配置）
+- 搜索模组: cfmod \<filter\>
+- 搜索整合包: cfpack \<filter\>
+- 搜索资源包: cfres \<filter\>
+- 搜索存档: cfword \<filter\>
+- 搜索水桶服插件: cfbukkit \<filter\>
+- 搜索附加: cfaddon \<filter\>
+- 搜索定制: cfcustom \<filter\>
 
 ## Screenshots
 
@@ -33,7 +41,7 @@
     - [x] 搜索整合包
     - [x] 搜索资源包
     - [x] ~~搜索存档~~
-    - [x] 根据项目ID搜索
+    - [ ] 根据项目ID搜索
 ---
 - [x] 分页选择
 - [ ] 获取介绍
@@ -50,5 +58,3 @@
 ## 鸣谢
 - [Mirai](https://github.com/mamoe/mirai) 提供机器人平台
 - [Mirai Console](https://github.com/mamoe/mirai-console) 开放插件接入
-- [Curseforge API](https://github.com/Gaz492/CurseforgeAPI) 提供`Curseforge API`
-- [Curseforge API Kotlin library](https://github.com/pearxteam/cursekt) 提供`Curseforge API`的`kotlin`封装

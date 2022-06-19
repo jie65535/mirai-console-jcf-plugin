@@ -9,48 +9,48 @@ import top.jie65535.jcf.util.PagedList
 class MinecraftService(apiKey: String) {
     companion object {
         private const val GAME_ID_MINECRAFT = 432
-        private const val DEFAULT_PAGE_SIZE = 20
+        private const val DEFAULT_PAGE_SIZE = 10
         private val DEFAULT_SORT_FIELD = ModsSearchSortField.Popularity
     }
 
     /**
      * mod分类
      */
-    enum class ModClass(val classId: Int) {
+    enum class ModClass(val className: String, val classId: Int) {
         /**
          * 存档
          */
-        WORLDS(17),
+        WORLDS("存档",17),
 
         /**
          * 水桶服插件
          */
-        BUKKIT_PLUGINS(5),
+        BUKKIT_PLUGINS("水桶服插件", 5),
 
         /**
          * 自定义
          */
-        CUSTOMIZATION(4546),
+        CUSTOMIZATION("定制", 4546),
 
         /**
          * 整合包
          */
-        MODPACKS(4471),
+        MODPACKS("整合包", 4471),
 
         /**
          * 资源包
          */
-        RESOURCE_PACKS(12),
+        RESOURCE_PACKS("资源包", 12),
 
         /**
          * 附加
          */
-        ADDONS(4559),
+        ADDONS("附加", 4559),
 
         /**
          * 模组
          */
-        MODS(6);
+        MODS("模组", 6);
     }
 
     /**

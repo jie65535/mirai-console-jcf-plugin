@@ -22,9 +22,6 @@ import top.jie65535.jcf.model.response.*
  */
 @OptIn(ExperimentalSerializationApi::class)
 class CurseforgeApi(apiKey: String) {
-    companion object {
-        private const val GAME_ID_MINECRAFT = 432
-    }
 
     private val json = Json {
         isLenient = true
@@ -34,9 +31,9 @@ class CurseforgeApi(apiKey: String) {
 
     private val http = HttpClient(OkHttp) {
         install(HttpTimeout) {
-            this.requestTimeoutMillis = 30_0000
-            this.connectTimeoutMillis = 30_0000
-            this.socketTimeoutMillis = 30_0000
+            this.requestTimeoutMillis = 300_000
+            this.connectTimeoutMillis = 300_000
+            this.socketTimeoutMillis  = 300_000
         }
         defaultRequest {
             url.protocol = URLProtocol.HTTPS
