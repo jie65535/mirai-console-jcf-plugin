@@ -16,6 +16,7 @@ class PagedList<T>(
 
     suspend fun prev(): Array<T> {
         if (pageIndex > 0) {
+            _hasNext = true
             pageIndex--
         }
         return current()
@@ -32,10 +33,15 @@ class PagedList<T>(
         return if (pageIndex < pages.size) {
             pages[pageIndex]
         } else {
-            val data = getPageData(pageIndex)
-            _hasNext = data.size == pageSize
-            pages.add(data)
-            data
+            val data = getPageData(pageIndex * pageSize)
+            if (data.isEmpty()) {
+                _hasNext = false
+                pages[--pageIndex]
+            } else {
+                _hasNext = data.size == pageSize
+                pages.add(data)
+                data
+            }
         }
     }
 }
