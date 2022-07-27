@@ -188,7 +188,7 @@ class ScheduleHandler(
     fun rerun(): Boolean {
         pause = false
         logger?.apply {
-            if (loopThread.isAlive) info("调度器[$name]继续运转...")
+            if (loopThread.isAlive) info("调度器[$name]正常运行...")
             else warning("调度器[$name]已关闭，无法继续")
         }
         return loopThread.isAlive
@@ -229,7 +229,7 @@ class ScheduleHandler(
             false
         else {
             put(id, action)
-            logger?.info("调度器[$name]新增任务[$id]，总任务量：$size")
+            logger?.info("新增任务[$id]，总任务量：$size--调度器[$name]")
             true
         }
     }
@@ -242,7 +242,7 @@ class ScheduleHandler(
     infix fun rmTask(id: String) = taskLock.withLock {
         if (id in this) {
             this -= id
-            logger?.info("调度器[$name]移除任务[$id]，总任务量：$size")
+            logger?.info("移除任务[$id]，总任务量：$size--调度器[$name]")
         }
     }
 
@@ -269,7 +269,7 @@ class ScheduleHandler(
             logger?.apply {
                 val m = then.get(Calendar.MINUTE)
                 val h = then.get(Calendar.HOUR_OF_DAY)
-                info("调度器[$name]添加时刻[$h:$m]，时刻表长度：${periodList.size}")
+                info("添加时刻[$h:$m]，时刻表长度：${periodList.size}--调度器[$name]")
             }
         }
     }
@@ -283,7 +283,7 @@ class ScheduleHandler(
             logger?.apply {
                 val m = then.get(Calendar.MINUTE)
                 val h = then.get(Calendar.HOUR_OF_DAY)
-                info("调度器[$name]移除时刻[$h:$m]，时刻表长度：${periodList.size}")
+                info("移除时刻[$h:$m]，时刻表长度：${periodList.size}--调度器[$name]")
             }
         }
     }

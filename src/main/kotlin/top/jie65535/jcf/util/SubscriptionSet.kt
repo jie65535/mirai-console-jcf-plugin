@@ -71,7 +71,7 @@ class SubscriptionSet(
             set += id
             logger?.apply {
                 val type = if (id < 0) "group" else "qq"
-                info("订阅集[$name]添加订阅{$mod:${type}_$id}，mod总订阅量：${set.size}")
+                info("添加订阅{$mod:${type}_$id}，mod总订阅量：${set.size}--订阅集[$name]")
             }
         }
     }
@@ -110,7 +110,7 @@ class SubscriptionSet(
                 it -= id
                 logger?.apply {
                     val type = if (id < 0) "group" else "qq"
-                    info("订阅集[$name]移除订阅{$mod:${type}_$id}，mod总订阅量：${it.size}")
+                    info("移除订阅{$mod:${type}_$id}，mod总订阅量：${it.size}--订阅集[$name]")
                 }
             }
         }
@@ -139,7 +139,7 @@ class SubscriptionSet(
      */
     infix fun rmMod(mod: Int) = receiverLock.withLock {
         remove(mod)?.let {
-            logger?.info("订阅集[$name]清除mod[$mod]，总mod量：$size")
+            logger?.info("清除mod[$mod]，总mod量：$size--订阅集[$name]")
         }
         Unit// return value
     }
