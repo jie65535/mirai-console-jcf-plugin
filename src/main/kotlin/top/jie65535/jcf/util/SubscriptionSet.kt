@@ -2,6 +2,7 @@ package top.jie65535.jcf.util
 
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.utils.MiraiLogger
+import java.util.*
 
 /**
  * 订阅集
@@ -13,6 +14,12 @@ class SubscriptionSet(
     private val bot: Bot,
     private val logger: MiraiLogger?
 ) {
+
+    /**
+     * 订阅集名称
+     */
+    private val name = "sub:${bot.id}:" + UUID.randomUUID().toString()
+
     /**
      * 订阅表
      * { mod : group/qq }
@@ -24,7 +31,19 @@ class SubscriptionSet(
      */
     private val receiverLock = LockUtil(receiverMap)
 
+    /**
+     * 订阅的mod数量
+     */
+    val countMod = receiverMap.size
+
     // region -- 参数
+
+    /**
+     * mod被订阅的qq/群数量
+     */
+    infix fun countSub(mod: Int): Int = receiverLock.withLock {
+        get(mod)?.size ?: 0
+    }
 
     /**
      * 清空订阅
@@ -44,13 +63,16 @@ class SubscriptionSet(
      * @param mod 模组id
      * @param  id qq/群号（不等于0）
      */
-    operator fun set(mod: Int, id: Long) {
+    private fun sub(mod: Int, id: Long) {
         if (id == 0L) return
         receiverLock.withLock {
             val set = get(mod) ?: mutableSetOf()
             put(mod, set)
             set += id
-            logger?.info("")// TODO 日志
+            logger?.apply {
+                val type = if (id < 0) "group" else "qq"
+                info("订阅集[$name]添加订阅{$mod:${type}_$id}，mod总订阅量：${set.size}")
+            }
         }
     }
 
@@ -60,7 +82,7 @@ class SubscriptionSet(
      * @param mod 模组id
      * @param  qq q号（大于0）
      */
-    fun subQQ(mod: Int, qq: Long) = set(mod, qq)
+    fun subQQ(mod: Int, qq: Long) = sub(mod, qq)
 
     /**
      * 记录订阅
@@ -68,7 +90,7 @@ class SubscriptionSet(
      * @param   mod 模组id
      * @param group 群号（大于0）
      */
-    fun subGroup(mod: Int, group: Long) = set(mod, 0 - group)
+    fun subGroup(mod: Int, group: Long) = sub(mod, 0 - group)
 
     /**
      * 取消订阅
@@ -81,12 +103,15 @@ class SubscriptionSet(
      * @param mod 模组id
      * @param  id qq/群号（不等于0）
      */
-    fun unSub(mod: Int, id: Long) {
+    private fun unSub(mod: Int, id: Long) {
         if (id == 0L) return
         receiverLock.withLock {
             get(mod)?.let {
                 it -= id
-                logger?.info("")// TODO 日志
+                logger?.apply {
+                    val type = if (id < 0) "group" else "qq"
+                    info("订阅集[$name]移除订阅{$mod:${type}_$id}，mod总订阅量：${it.size}")
+                }
             }
         }
     }
@@ -94,8 +119,8 @@ class SubscriptionSet(
     /**
      * 撤销用户订阅
      *
-     * @param   mod 模组id
-     * @param    qq q号（大于0）
+     * @param mod 模组id
+     * @param  qq q号（大于0）
      */
     fun unSubQQ(mod: Int, qq: Long) = unSub(mod, qq)
 
@@ -110,18 +135,21 @@ class SubscriptionSet(
     /**
      * 撤销mod订阅
      *
-     * TODO 日志
-     *
      * @param mod 模组id
      */
-    operator fun minusAssign(mod: Int) = receiverLock.withLock {
-        if (mod < 0) {
-            clear()
-        } else {
-            remove(mod)
+    infix fun rmMod(mod: Int) = receiverLock.withLock {
+        remove(mod)?.let {
+            logger?.info("订阅集[$name]清除mod[$mod]，总mod量：$size")
         }
         Unit// return value
     }
+
+    /**
+     * 撤销mod订阅
+     *
+     * @param mod 模组id
+     */
+    operator fun minusAssign(mod: Int) = rmMod(mod)
 
     // endregion
 
