@@ -14,10 +14,24 @@ class SubscriptionSet(
     private val logger: MiraiLogger?
 ) {
     /**
+     * 订阅表
      * { mod : group/qq }
-     * TODO 线程锁
      */
     private val receiverMap = mutableMapOf<Int, MutableSet<Long>>()
+
+    /**
+     * 订阅表线程锁
+     */
+    private val receiverLock = LockUtil(receiverMap)
+
+    // region -- 参数
+
+    /**
+     * 清空订阅
+     */
+    fun clear() = receiverLock.withLock {
+        clear()
+    }
 
     /**
      * 记录订阅
@@ -28,21 +42,23 @@ class SubscriptionSet(
      * 小于 0 为群号；
      *
      * @param mod 模组id
-     * @param  id qq/群号（大于等于0）
+     * @param  id qq/群号（不等于0）
      */
     operator fun set(mod: Int, id: Long) {
         if (id == 0L) return
-        val set = receiverMap[mod] ?: mutableSetOf()
-        receiverMap[mod] = set
-        set +=  id
-        logger?.info("")// TODO 日志
+        receiverLock.withLock {
+            val set = get(mod) ?: mutableSetOf()
+            put(mod, set)
+            set += id
+            logger?.info("")// TODO 日志
+        }
     }
 
     /**
      * 记录订阅
      *
      * @param mod 模组id
-     * @param  qq q号（大于等于0）
+     * @param  qq q号（大于0）
      */
     fun subQQ(mod: Int, qq: Long) = set(mod, qq)
 
@@ -50,7 +66,7 @@ class SubscriptionSet(
      * 记录订阅
      *
      * @param   mod 模组id
-     * @param group 群号（大于等于0）
+     * @param group 群号（大于0）
      */
     fun subGroup(mod: Int, group: Long) = set(mod, 0 - group)
 
@@ -63,13 +79,15 @@ class SubscriptionSet(
      * 小于 0 为群号；
      *
      * @param mod 模组id
-     * @param  id qq/群号
+     * @param  id qq/群号（不等于0）
      */
     fun unSub(mod: Int, id: Long) {
         if (id == 0L) return
-        receiverMap[mod]?.let {
-            it -= id
-            logger?.info("")// TODO 日志
+        receiverLock.withLock {
+            get(mod)?.let {
+                it -= id
+                logger?.info("")// TODO 日志
+            }
         }
     }
 
@@ -77,7 +95,7 @@ class SubscriptionSet(
      * 撤销用户订阅
      *
      * @param   mod 模组id
-     * @param    qq qq号（大于等于0）
+     * @param    qq q号（大于0）
      */
     fun unSubQQ(mod: Int, qq: Long) = unSub(mod, qq)
 
@@ -85,7 +103,7 @@ class SubscriptionSet(
      * 撤销群订阅
      *
      * @param   mod 模组id
-     * @param group 群号
+     * @param group 群号（大于0）
      */
     fun unsubGroup(mod: Int, group: Long) = unSub(mod, 0 - group)
 
@@ -96,12 +114,18 @@ class SubscriptionSet(
      *
      * @param mod 模组id
      */
-    operator fun minusAssign(mod: Int) =
+    operator fun minusAssign(mod: Int) = receiverLock.withLock {
         if (mod < 0) {
-            receiverMap.clear()
+            clear()
         } else {
-            receiverMap -= mod
+            remove(mod)
         }
+        Unit// return value
+    }
+
+    // endregion
+
+    // region -- 消费
 
     /**
      * 遍历订阅
@@ -109,13 +133,14 @@ class SubscriptionSet(
      * @param    mod 模组id
      * @param action qq号消费操作
      */
-    fun eachQQ(mod: Int, action: (Long) -> Unit) =
-        receiverMap[mod]?.let {
+    fun eachQQ(mod: Int, action: (Long) -> Unit) = receiverLock.withLock {
+        get(mod)?.let {
             for (qq in it) {
                 if (qq <= 0) continue
                 action(qq)
             }
         }
+    }
 
     /**
      * 遍历订阅
@@ -123,11 +148,14 @@ class SubscriptionSet(
      * @param    mod 模组id
      * @param action 群号消费操作
      */
-    fun eachGroup(mod: Int, action: (Long) -> Unit) =
-        receiverMap[mod]?.let {
+    fun eachGroup(mod: Int, action: (Long) -> Unit) = receiverLock.withLock {
+        get(mod)?.let {
             for (group in it) {
                 if (group >= 0) continue
                 action(0 - group)
             }
         }
+    }
+
+    // endregion
 }
