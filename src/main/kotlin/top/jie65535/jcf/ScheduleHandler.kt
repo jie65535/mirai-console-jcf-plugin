@@ -148,7 +148,7 @@ class ScheduleHandler(
                 // TODO 异步、限时
                 for ((id, task) in this) {
                     if (pause) {
-                        logger?.info("调度器[$name]执行在任务中暂停")
+                        logger?.info("调度器[$name]在执行任务中暂停")
                         break
                     }
                     else task(id)
@@ -207,6 +207,11 @@ class ScheduleHandler(
     // endregion
 
     // region -- 参数
+
+    /**
+     * 获取所属bot
+     */
+    fun bot(): Bot = bot
 
     /**
      * 检查 id 是否已添加

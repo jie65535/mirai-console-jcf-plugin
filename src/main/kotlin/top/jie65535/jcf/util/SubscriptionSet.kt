@@ -5,6 +5,11 @@ import net.mamoe.mirai.utils.MiraiLogger
 import java.util.*
 
 /**
+ * 用户个人订阅的 group
+ */
+private const val SINGLE: Long = 0
+
+/**
  * 订阅集
  *
  * @param    bot 每个 bot 维护一个订阅集
@@ -22,9 +27,9 @@ class SubscriptionSet(
 
     /**
      * 订阅表
-     * { mod : group/qq }
+     * { mod : { group : qq } }
      */
-    private val receiverMap = mutableMapOf<Int, MutableSet<Long>>()
+    private val receiverMap = mutableMapOf<Int, MutableMap<Long, MutableSet<Long>>>()
 
     /**
      * 订阅表线程锁
@@ -39,101 +44,75 @@ class SubscriptionSet(
     // region -- 参数
 
     /**
-     * mod被订阅的qq/群数量
+     * 获取所属bot
+     */
+    fun bot(): Bot = bot
+
+    /**
+     * mod被订阅的个人+群数量
      */
     infix fun countSub(mod: Int): Int = receiverLock.withLock {
-        get(mod)?.size ?: 0
+        get(mod)?.let {
+            val single = it[SINGLE]?.size ?: 0
+            size - 1 + single
+        } ?: 0
     }
 
     /**
      * 清空订阅
      */
     fun clear() = receiverLock.withLock {
-        clear()
+        receiverMap.clear()
     }
-
-    /**
-     * 记录订阅
-     *
-     * [id] 规则：
-     * 等于 0 无效；
-     * 大于 0 为qq；
-     * 小于 0 为群号；
-     *
-     * @param mod 模组id
-     * @param  id qq/群号（不等于0）
-     */
-    private fun sub(mod: Int, id: Long) {
-        if (id == 0L) return
-        receiverLock.withLock {
-            val set = get(mod) ?: mutableSetOf()
-            put(mod, set)
-            set += id
-            logger?.apply {
-                val type = if (id < 0) "group" else "qq"
-                info("添加订阅{$mod:${type}_$id}，mod总订阅量：${set.size}--订阅集[$name]")
-            }
-        }
-    }
-
-    /**
-     * 记录订阅
-     *
-     * @param mod 模组id
-     * @param  qq q号（大于0）
-     */
-    fun subQQ(mod: Int, qq: Long) = sub(mod, qq)
 
     /**
      * 记录订阅
      *
      * @param   mod 模组id
+     * @param    qq q号（大于0）
      * @param group 群号（大于0）
      */
-    fun subGroup(mod: Int, group: Long) = sub(mod, 0 - group)
+    fun sub(mod: Int, qq: Long, group: Long = SINGLE) = receiverLock.withLock {
+        get(mod)?.let {
+            val qs = it[group] ?: mutableSetOf()
+            it[group] = qs
+            if (qs.add(qq)) {
+                logger?.info("新增订阅{$mod:{$group:$qq}}--订阅集[$name]")
+            }
+        }
+    }
 
     /**
      * 取消订阅
      *
-     * [id] 规则：
-     * 等于 0 无效；
-     * 大于 0 为qq；
-     * 小于 0 为群号；
-     *
-     * @param mod 模组id
-     * @param  id qq/群号（不等于0）
+     * @param   mod 模组id
+     * @param    qq q号（大于0）
+     * @param group 群号（大于0）
      */
-    private fun unSub(mod: Int, id: Long) {
-        if (id == 0L) return
-        receiverLock.withLock {
-            get(mod)?.let {
-                it -= id
-                logger?.apply {
-                    val type = if (id < 0) "group" else "qq"
-                    info("移除订阅{$mod:${type}_$id}，mod总订阅量：${it.size}--订阅集[$name]")
+    fun unsub(mod: Int, qq: Long, group: Long = SINGLE) = receiverLock.withLock {
+        get(mod)?.let {
+            it[group]?.let { qs ->
+                if (qs.remove(qq)) {
+                    logger?.info("取消订阅{$mod:{$group:$qq}}--订阅集[$name]")
                 }
             }
         }
     }
 
     /**
-     * 撤销用户订阅
-     *
-     * @param mod 模组id
-     * @param  qq q号（大于0）
-     */
-    fun unSubQQ(mod: Int, qq: Long) = unSub(mod, qq)
-
-    /**
-     * 撤销群订阅
+     * 移除群订阅
      *
      * @param   mod 模组id
      * @param group 群号（大于0）
      */
-    fun unsubGroup(mod: Int, group: Long) = unSub(mod, 0 - group)
+    fun unsubGroup(mod: Int, group: Long) = receiverLock.withLock {
+        get(mod)?.remove(group)?.let {
+            logger?.info("移除群订阅{$mod:$group}--订阅集[$name]")
+        }
+    }
 
     /**
-     * 撤销mod订阅
+     * 移除mod
      *
      * @param mod 模组id
      */
@@ -145,9 +124,7 @@ class SubscriptionSet(
     }
 
     /**
-     * 撤销mod订阅
-     *
-     * @param mod 模组id
+     * [rmMod]
      */
     operator fun minusAssign(mod: Int) = rmMod(mod)
 
@@ -156,32 +133,26 @@ class SubscriptionSet(
     // region -- 消费
 
     /**
-     * 遍历订阅
+     * 遍历个人订阅
      *
      * @param    mod 模组id
      * @param action qq号消费操作
      */
-    fun eachQQ(mod: Int, action: (Long) -> Unit) = receiverLock.withLock {
-        get(mod)?.let {
-            for (qq in it) {
-                if (qq <= 0) continue
-                action(qq)
-            }
-        }
+    fun eachSingle(mod: Int, action: (qq: Long) -> Unit) = receiverLock.withLock {
+        get(mod)?.get(SINGLE)?.forEach { action(it) }
     }
 
     /**
-     * 遍历订阅
+     * 遍历群订阅
      *
      * @param    mod 模组id
-     * @param action 群号消费操作
+     * @param action 消费操作
      */
-    fun eachGroup(mod: Int, action: (Long) -> Unit) = receiverLock.withLock {
-        get(mod)?.let {
-            for (group in it) {
-                if (group >= 0) continue
-                action(0 - group)
-            }
+    fun eachGroup(mod: Int, action: (group: Long, member: List<Long>) -> Unit) = receiverLock.withLock {
+        get(mod)?.filter {
+            it.key != SINGLE
+        }?.forEach { (g, m) ->
+            action(g, m.toList())
         }
     }
 
