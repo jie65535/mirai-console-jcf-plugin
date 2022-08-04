@@ -123,14 +123,22 @@ class SubscribeHandler(
     private suspend fun checkUpdate(init: Boolean = false) = flow {
         val oldSet = PluginData.modsLastFile
         if (oldSet.isNotEmpty()) {
+            val fetchMods = service.getMods(oldSet.keys.toIntArray())
+                .asSequence()
+                .map { it.id to it }
+                .toMap()
             for ((mod, old) in oldSet) {
                 try {
-                    val info = service.getMod(mod)
-                    logger.info("模组更新【${info.name}】")
-                    MOD_INFO_CACHE[mod] = info
-                    val last = info.latestFilesIndexes[0].fileId
+                    val new = fetchMods[mod]
+                    if (new == null) {
+                        emit(mod to -1)
+                        continue
+                    }
+                    MOD_INFO_CACHE[mod] = new
+                    val last = new.latestFilesIndexes[0].fileId
                     if (old != last || init) {
                         emit(mod to last)
+                        logger.info("模组更新【${new.name}】")
                     }
                 } catch (e: Exception) {
                     logger.warning("err msg: ${e.message}")
