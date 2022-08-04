@@ -1,5 +1,6 @@
 package top.jie65535.jcf
 
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -17,8 +18,14 @@ object PluginMain: KotlinPlugin(
                 "https://github.com/jie65535/mirai-console-jcf-plugin")
     }
 ) {
+    /**
+     * 订阅处理类
+     */
+    lateinit var subscribeHandler: SubscribeHandler private set
+
     override fun onEnable() {
         logger.info { "Plugin loaded" }
+        PluginData.reload()
         PluginConfig.reload()
         PluginCommands.register()
 
@@ -31,7 +38,12 @@ object PluginMain: KotlinPlugin(
         val service = MinecraftService(PluginConfig.apiKey)
         val eventChannel = GlobalEventChannel.parentScope(this)
         val messageHandler = MessageHandler(service, eventChannel, logger)
+        subscribeHandler = SubscribeHandler(service, logger)
         messageHandler.startListen()
+        launch {
+            subscribeHandler.load(this)
+        }
+        subscribeHandler.start()// TODO 添加可切换闲置状态的命令
         logger.info { "Plugin Enabled" }
     }
 }
