@@ -224,14 +224,13 @@ class SubscribeHandler(
      */
     private fun CoroutineScope.loop() = launch {
         val senderQQ = PluginConfig.subscribeSender
-        val interval = PluginConfig.checkInterval
         if (senderQQ < 0) {
             logger.warning("必须配置订阅信息推送bot（qq id）才可以进行订阅推送！")
             logger.warning("插件会持续收集订阅与检查mod更新，但无法进行消息推送。")
         }
         logger.info("subscription listening")
         while (true) {
-            delay(1000 * interval)
+            delay(1000 * PluginConfig.checkInterval)
             if (isIdle) continue
 
             val subSet = HashMap(PluginData.subscriptionSet)

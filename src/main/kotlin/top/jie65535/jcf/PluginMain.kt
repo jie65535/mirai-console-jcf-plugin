@@ -43,7 +43,7 @@ object PluginMain: KotlinPlugin(
         launch {
             subscribeHandler.load(this)
         }
-        subscribeHandler.start()// TODO 添加可切换闲置状态的命令
+        subscribeHandler.start()
         logger.info { "Plugin Enabled" }
     }
 }

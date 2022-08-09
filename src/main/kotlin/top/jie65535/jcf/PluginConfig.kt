@@ -25,11 +25,11 @@ object PluginConfig : AutoSavePluginConfig("JCurseforgeConfig") {
      * 订阅信息推送bot
      */
     @ValueDescription("订阅信息推送bot（qq id）")
-    val subscribeSender: Long by value(-1L)
+    var subscribeSender: Long by value(-1L)
 
     /**
      * 检查间隔
      */
     @ValueDescription("检查间隔（单位：秒）")
-    val checkInterval: Long by value(60 * 60 * 4L)
+    var checkInterval: Long by value(60 * 60 * 4L)
 }
