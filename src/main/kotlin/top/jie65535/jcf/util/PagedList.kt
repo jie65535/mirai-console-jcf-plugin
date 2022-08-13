@@ -34,14 +34,9 @@ class PagedList<T>(
             pages[pageIndex]
         } else {
             val data = getPageData(pageIndex * pageSize)
-            if (data.isEmpty()) {
-                _hasNext = false
-                pages[--pageIndex]
-            } else {
-                _hasNext = data.size == pageSize
-                pages.add(data)
-                data
-            }
+            _hasNext = data.size == pageSize
+            pages.add(data)
+            data
         }
     }
 }
