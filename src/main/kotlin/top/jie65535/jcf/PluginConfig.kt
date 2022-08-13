@@ -20,4 +20,16 @@ object PluginConfig : AutoSavePluginConfig("JCurseforgeConfig") {
             MinecraftService.ModClass.CUSTOMIZATION to "cfcustom ",
         )
     )
+
+    /**
+     * 订阅信息推送bot
+     */
+    @ValueDescription("订阅信息推送bot（qq id）")
+    var subscribeSender: Long by value(-1L)
+
+    /**
+     * 检查间隔
+     */
+    @ValueDescription("检查间隔（单位：秒）")
+    var checkInterval: Long by value(60 * 60 * 4L)
 }

@@ -1,7 +1,9 @@
 package top.jie65535.jcf
 
+import io.ktor.http.*
 import kotlinx.coroutines.*
 import net.mamoe.mirai.event.*
+import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
@@ -125,7 +127,7 @@ class MessageHandler(
         subject.sendMessage(
             buildForwardMessage {
                 // logo
-                mod.logo.thumbnailUrl?.let {
+                mod.logo?.thumbnailUrl?.let {
                     if (it.isNotBlank()) bot says loadImage(it)
                 }
                 // basic info
@@ -141,7 +143,7 @@ class MessageHandler(
                         主页：${mod.links.websiteUrl}
                     """.trimIndent()
                 })
-                var msg = "$WAIT_REPLY_TIMEOUT_S 秒内回复 $SUBSCRIBE_KEYWORD 订阅模组更新（TODO）"
+                var msg = "$WAIT_REPLY_TIMEOUT_S 秒内回复 $SUBSCRIBE_KEYWORD 订阅模组更新"
                 if (mod.latestFiles.isNotEmpty()) {
                     msg += "\n回复编号查看文件详细信息\n" +
                             "回复 $VIEW_FILES_KEYWORD 查看全部历史文件"
@@ -163,9 +165,14 @@ class MessageHandler(
                 eventChannel.nextEvent<MessageEvent>(EventPriority.MONITOR) { it.sender == sender }
             }
             val nextMessage = next.message.content
+            val subsHandler = PluginMain.subscribeHandler
             if (nextMessage.equals(SUBSCRIBE_KEYWORD, true)) {
-                // TODO 实现订阅模组更新功能
-                subject.sendMessage("订阅更新功能暂未完成，敬请期待")
+                if (next is GroupMessageEvent) {
+                    subsHandler.sub(mod.id, next.sender.id, next.group.id)
+                } else {
+                    subsHandler.sub(mod.id, next.sender.id)
+                }
+                subject.sendMessage(QuoteReply(next.source) + "已添加订阅")
             } else if (mod.latestFiles.isNotEmpty()) {
                 if (nextMessage.equals(VIEW_FILES_KEYWORD, true)) {
                     // 查看所有文件
@@ -248,7 +255,7 @@ class MessageHandler(
             return image
         }
 
-        private val HTMLPattern = Pattern.compile("<[^>]+>", Pattern.CASE_INSENSITIVE)
+        val HTMLPattern: Pattern = Pattern.compile("<[^>]+>", Pattern.CASE_INSENSITIVE)
         fun MessageEvent.sendLargeMessage(message: String): Message {
             return buildForwardMessage {
                 for (g in message.indices step ONE_GRP_SIZE) {
