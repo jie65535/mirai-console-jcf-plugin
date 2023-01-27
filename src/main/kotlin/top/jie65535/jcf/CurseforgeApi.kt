@@ -1,9 +1,11 @@
 package top.jie65535.jcf
 
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
@@ -31,9 +33,9 @@ class CurseforgeApi(apiKey: String) {
 
     private val http = HttpClient(OkHttp) {
         install(HttpTimeout) {
-            this.requestTimeoutMillis = 300_000
-            this.connectTimeoutMillis = 300_000
-            this.socketTimeoutMillis  = 300_000
+            this.requestTimeoutMillis = 60_000
+            this.connectTimeoutMillis = 60_000
+            this.socketTimeoutMillis  = 60_000
         }
         defaultRequest {
             url.protocol = URLProtocol.HTTPS
@@ -53,7 +55,7 @@ class CurseforgeApi(apiKey: String) {
             http.get("/v1/games") {
                 parameter("index", index)
                 parameter("pageSize", pageSize)
-            }
+            }.body()
         )
     }
 
@@ -62,7 +64,7 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getGame(gameId: Int): Game {
         return json.decodeFromString<GetGameResponse>(
-            http.get("/v1/games/$gameId")
+            http.get("/v1/games/$gameId").body()
         ).data
     }
 
@@ -72,7 +74,7 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getVersions(gameId: Int): Array<GameVersionsByType> {
         return json.decodeFromString<GetVersionsResponse>(
-            http.get("/v1/games/$gameId/versions")
+            http.get("/v1/games/$gameId/versions").body()
         ).data
     }
 
@@ -90,7 +92,7 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getVersionTypes(gameId: Int): Array<GameVersionType> {
         return json.decodeFromString<GetVersionTypesResponse>(
-            http.get("/v1/games/$gameId/versions")
+            http.get("/v1/games/$gameId/versions").body()
         ).data
     }
 
@@ -108,7 +110,7 @@ class CurseforgeApi(apiKey: String) {
             http.get("/v1/categories") {
                 parameter("gameId", gameId)
                 parameter("classId", classId)
-            }
+            }.body()
         ).data
     }
 
@@ -163,7 +165,7 @@ class CurseforgeApi(apiKey: String) {
                 parameter("slug", slug)
                 parameter("index", index)
                 parameter("pageSize", pageSize)
-            }
+            }.body()
         )
     }
 
@@ -172,7 +174,7 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getMod(modId: Int): Mod {
         return json.decodeFromString<GetModResponse>(
-            http.get("/v1/mods/$modId")
+            http.get("/v1/mods/$modId").body()
         ).data
     }
 
@@ -183,8 +185,8 @@ class CurseforgeApi(apiKey: String) {
         return json.decodeFromString<GetModsResponse>(
             http.post("/v1/mods") {
                 headers.append("Content-Type", "application/json")
-                body = json.encodeToString(GetModsByIdsListRequestBody(modIds))
-            }
+                setBody(json.encodeToString(GetModsByIdsListRequestBody(modIds)))
+            }.body()
         ).data
     }
 
@@ -199,8 +201,8 @@ class CurseforgeApi(apiKey: String) {
         return json.decodeFromString<GetFeaturedModsResponse>(
             http.get("/v1/mods/featured") {
                 headers.append("Content-Type", "application/json")
-                body = json.encodeToString(GetFeaturedModsRequestBody(gameId, excludedModIds, gameVersionTypeId))
-            }
+                setBody(json.encodeToString(GetFeaturedModsRequestBody(gameId, excludedModIds, gameVersionTypeId)))
+            }.body()
         ).data
     }
 
@@ -209,7 +211,7 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getModDescription(modId: Int): String {
         return json.decodeFromString<StringResponse>(
-            http.get("/v1/mods/$modId/description")
+            http.get("/v1/mods/$modId/description").body()
         ).data
     }
 
@@ -222,7 +224,7 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getModFile(modId: Int, fileId: Int): File {
         return json.decodeFromString<GetModFileResponse>(
-            http.get("/v1/mods/$modId/files/$fileId")
+            http.get("/v1/mods/$modId/files/$fileId").body()
         ).data
     }
 
@@ -244,7 +246,7 @@ class CurseforgeApi(apiKey: String) {
                 parameter("gameVersionTypeId", gameVersionTypeId)
                 parameter("index", index)
                 parameter("pageSize", pageSize)
-            }
+            }.body()
         )
     }
 
@@ -255,8 +257,8 @@ class CurseforgeApi(apiKey: String) {
         return json.decodeFromString<GetFilesResponse>(
             http.post("/v1/mods/files") {
                 headers.append("Content-Type", "application/json")
-                body = json.encodeToString(GetModFilesRequestBody(fileIds))
-            }
+                setBody(json.encodeToString(GetModFilesRequestBody(fileIds)))
+            }.body()
         ).data
     }
 
@@ -265,7 +267,7 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getModFileChangelog(modId: Int, fileId: Int): String {
         return json.decodeFromString<StringResponse>(
-            http.get("/v1/mods/$modId/files/$fileId/changelog")
+            http.get("/v1/mods/$modId/files/$fileId/changelog").body()
         ).data
     }
 
@@ -274,7 +276,7 @@ class CurseforgeApi(apiKey: String) {
      */
     suspend fun getModFileDownloadURL(modId: Int, fileId: Int): String {
         return json.decodeFromString<StringResponse>(
-            http.get("/v1/mods/$modId/files/$fileId/download-url")
+            http.get("/v1/mods/$modId/files/$fileId/download-url").body()
         ).data
     }
 

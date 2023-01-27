@@ -11,7 +11,7 @@ object PluginMain: KotlinPlugin(
     JvmPluginDescription(
         id = "top.jie65535.jcf",
         name = "J Curseforge Util",
-        version = "1.0.0",
+        version = "1.1.0",
     ) {
         author("jie65535")
         info("MC Curseforge Util\n" +

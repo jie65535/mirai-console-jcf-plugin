@@ -1,20 +1,22 @@
 plugins {
-    val kotlinVersion = "1.6.21"
+    val kotlinVersion = "1.7.10"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-    id("net.mamoe.mirai-console") version "2.11.1"
+    id("net.mamoe.mirai-console") version "2.13.2"
 }
 
 group = "top.jie65535.jcf"
-version = "1.0.0"
+version = "1.1.0"
 
 repositories {
     maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
 }
+val ktorVersion = "2.2.2"
 
 dependencies {
-    testImplementation(kotlin("test"))
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.2")
+//    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
 }

@@ -1,7 +1,7 @@
 package top.jie65535.jcf
 
-import io.ktor.http.*
 import kotlinx.coroutines.*
+import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.*
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
@@ -33,6 +33,7 @@ class MessageHandler(
                         subject.sendMessage(message.quote() + "必须输入关键字")
                     } else {
                         try {
+                            logger.info("${sender.nameCardOrNick}(${sender.id}) $modClass \"$filter\"")
                             val pagedList = service.search(modClass, filter)
                             with(pagedList.current()) {
                                 if (isEmpty()) {
@@ -59,7 +60,7 @@ class MessageHandler(
      * @param format 格式化方法
      * @return 用户选中项，null表示未选择任何项
      */
-    private suspend fun <T> MessageEvent.handlePagedList(pagedList: PagedList<T>, format: (T)->Message): T? {
+    private suspend fun <T> MessageEvent.handlePagedList(pagedList: PagedList<T>, format: suspend (T)->Message): T? {
         do {
             var isContinue = false
             val list = pagedList.current()
@@ -109,13 +110,14 @@ class MessageHandler(
      */
     private suspend fun MessageEvent.handleModsSearchResult(pagedList: PagedList<Mod>) {
         val selectedMod = handlePagedList(pagedList) { mod ->
-            PlainText(
+            val text = PlainText(
                 """
                     [${mod.name}] by ${mod.authors.firstOrNull()?.name}
                     ${formatCount(mod.downloadCount)} Downloads  Updated ${mod.dateModified.toLocalDate()}
                     ${mod.summary}
                     ${mod.links.websiteUrl}
                 """.trimIndent())
+            mod.logo?.thumbnailUrl?.let { loadImage(it) + text } ?: text
         }
         selectedMod?.let { handleShowMod(it) }
     }
