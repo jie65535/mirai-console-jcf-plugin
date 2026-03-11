@@ -21,6 +21,18 @@ object PluginConfig : AutoSavePluginConfig("JCurseforgeConfig") {
         )
     )
 
+    @ValueDescription("Modrinth 搜索命令 (MODS,MODPACKS,RESOURCE_PACKS,SHADERS,PLUGINS,DATA_PACKS)")
+    val mrSearchCommands: MutableMap<ModrinthService.ProjectType, String> by value(
+        mutableMapOf(
+            ModrinthService.ProjectType.MODS          to "mrmod ",
+            ModrinthService.ProjectType.MODPACKS      to "mrpack ",
+            ModrinthService.ProjectType.RESOURCE_PACKS to "mrres ",
+            ModrinthService.ProjectType.SHADERS       to "mrshader ",
+            ModrinthService.ProjectType.PLUGINS       to "mrplugin ",
+            ModrinthService.ProjectType.DATA_PACKS    to "mrdata ",
+        )
+    )
+
     /**
      * 订阅信息推送bot
      */
