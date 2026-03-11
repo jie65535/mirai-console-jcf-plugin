@@ -28,6 +28,12 @@ object PluginMain: KotlinPlugin(
      */
     lateinit var modrinthSubscribeHandler: ModrinthSubscribeHandler private set
 
+    /**
+     * CurseForge is enabled only when an API key is configured.
+     */
+    var isCurseForgeEnabled = false
+        private set
+
     override fun onEnable() {
         logger.info { "Plugin loaded" }
         PluginData.reload()
@@ -60,6 +66,7 @@ object PluginMain: KotlinPlugin(
                 subscribeHandler.load(this)
             }
             subscribeHandler.start()
+            isCurseForgeEnabled = true
         }
 
         logger.info { "Plugin Enabled" }

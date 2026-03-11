@@ -244,7 +244,8 @@ class ModrinthMessageHandler(
         private val singleDecimalFormat = DecimalFormat("0.#")
 
         private fun formatCount(count: Long): String = when {
-            count < 1_000_000L    -> singleDecimalFormat.format(count / 1_000.0) + "K"
+            count < 1_000L         -> count.toString()
+            count < 1_000_000L     -> singleDecimalFormat.format(count / 1_000.0) + "K"
             count < 1_000_000_000L -> singleDecimalFormat.format(count / 1_000_000.0) + "M"
             else                   -> count.toString()
         }

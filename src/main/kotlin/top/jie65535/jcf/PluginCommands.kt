@@ -43,6 +43,10 @@ object PluginCommands : CompositeCommand(PluginMain, "jcf") {
     @SubCommand
     @Description("查看 CurseForge 订阅处理的状态")
     suspend fun CommandSender.subStat() {
+        if (!PluginMain.isCurseForgeEnabled) {
+            sendMessage("CurseForge 未配置 API Key，订阅功能不可用")
+            return
+        }
         val subs = PluginMain.subscribeHandler
         if (subs.isIdle) {
             sendMessage("CurseForge 订阅器闲置中")
@@ -54,6 +58,10 @@ object PluginCommands : CompositeCommand(PluginMain, "jcf") {
     @SubCommand
     @Description("使 CurseForge 订阅器闲置")
     suspend fun CommandSender.idleSubs() {
+        if (!PluginMain.isCurseForgeEnabled) {
+            sendMessage("CurseForge 未配置 API Key，订阅功能不可用")
+            return
+        }
         PluginMain.subscribeHandler.idle()
         sendMessage("OK，已闲置")
     }
@@ -61,6 +69,10 @@ object PluginCommands : CompositeCommand(PluginMain, "jcf") {
     @SubCommand
     @Description("使 CurseForge 订阅器恢复运行")
     suspend fun CommandSender.runSubs() {
+        if (!PluginMain.isCurseForgeEnabled) {
+            sendMessage("CurseForge 未配置 API Key，订阅功能不可用")
+            return
+        }
         PluginMain.subscribeHandler.start()
         sendMessage("OK，已恢复 CurseForge 订阅处理")
     }

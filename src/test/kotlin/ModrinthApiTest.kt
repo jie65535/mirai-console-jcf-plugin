@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ModrinthApiTest {
     companion object {
-        // Sodium – one of the most popular Minecraft optimization mods on Modrinth
+        // Sodium - one of the most popular Minecraft optimization mods on Modrinth
         private const val PROJECT_SLUG = "sodium"
         private const val PROJECT_TYPE = "mod"
     }
