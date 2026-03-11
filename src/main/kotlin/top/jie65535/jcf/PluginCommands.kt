@@ -15,8 +15,13 @@ object PluginCommands : CompositeCommand(PluginMain, "jcf") {
     @Description("查看插件帮助")
     suspend fun CommandSender.help() {
         val msg = StringBuilder()
+        msg.appendLine("=== CurseForge 命令 ===")
         for ((modClass, cmd) in PluginConfig.searchCommands) {
             msg.appendLine("搜索${modClass.className}: $cmd")
+        }
+        msg.appendLine("=== Modrinth 命令 ===")
+        for ((projectType, cmd) in PluginConfig.mrSearchCommands) {
+            msg.appendLine("搜索${projectType.typeName}: $cmd")
         }
         sendMessage(msg.toString())
     }
@@ -36,27 +41,64 @@ object PluginCommands : CompositeCommand(PluginMain, "jcf") {
     }
 
     @SubCommand
-    @Description("查看订阅处理的状态")
+    @Description("查看 CurseForge 订阅处理的状态")
     suspend fun CommandSender.subStat() {
+        if (!PluginMain.isCurseForgeEnabled) {
+            sendMessage("CurseForge 未配置 API Key，订阅功能不可用")
+            return
+        }
         val subs = PluginMain.subscribeHandler
         if (subs.isIdle) {
-            sendMessage("订阅器闲置中")
+            sendMessage("CurseForge 订阅器闲置中")
         } else {
-            sendMessage("订阅处理正常运行中")
+            sendMessage("CurseForge 订阅处理正常运行中")
         }
     }
 
     @SubCommand
-    @Description("使订阅器闲置")
+    @Description("使 CurseForge 订阅器闲置")
     suspend fun CommandSender.idleSubs() {
+        if (!PluginMain.isCurseForgeEnabled) {
+            sendMessage("CurseForge 未配置 API Key，订阅功能不可用")
+            return
+        }
         PluginMain.subscribeHandler.idle()
         sendMessage("OK，已闲置")
     }
 
     @SubCommand
-    @Description("使订阅器恢复运行")
+    @Description("使 CurseForge 订阅器恢复运行")
     suspend fun CommandSender.runSubs() {
+        if (!PluginMain.isCurseForgeEnabled) {
+            sendMessage("CurseForge 未配置 API Key，订阅功能不可用")
+            return
+        }
         PluginMain.subscribeHandler.start()
-        sendMessage("OK，已恢复订阅处理")
+        sendMessage("OK，已恢复 CurseForge 订阅处理")
+    }
+
+    @SubCommand
+    @Description("查看 Modrinth 订阅处理的状态")
+    suspend fun CommandSender.mrSubStat() {
+        val subs = PluginMain.modrinthSubscribeHandler
+        if (subs.isIdle) {
+            sendMessage("Modrinth 订阅器闲置中")
+        } else {
+            sendMessage("Modrinth 订阅处理正常运行中")
+        }
+    }
+
+    @SubCommand
+    @Description("使 Modrinth 订阅器闲置")
+    suspend fun CommandSender.mrIdleSubs() {
+        PluginMain.modrinthSubscribeHandler.idle()
+        sendMessage("OK，Modrinth 订阅器已闲置")
+    }
+
+    @SubCommand
+    @Description("使 Modrinth 订阅器恢复运行")
+    suspend fun CommandSender.mrRunSubs() {
+        PluginMain.modrinthSubscribeHandler.start()
+        sendMessage("OK，已恢复 Modrinth 订阅处理")
     }
 }
