@@ -37,6 +37,9 @@ class ModrinthApi {
             url.protocol = URLProtocol.HTTPS
             url.host = "api.modrinth.com"
             header("accept", "application/json")
+            // Modrinth recommends a descriptive User-Agent to identify the application.
+            // No API key is required for read-only (search/get) endpoints.
+            header("User-Agent", "jie65535/mirai-console-jcf-plugin (https://github.com/jie65535/mirai-console-jcf-plugin)")
         }
     }
 

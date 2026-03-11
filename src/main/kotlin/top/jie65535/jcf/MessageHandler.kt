@@ -37,7 +37,7 @@ class MessageHandler(
                             val pagedList = service.search(modClass, filter)
                             with(pagedList.current()) {
                                 if (isEmpty()) {
-                                    subject.sendMessage("未搜索到关键字\"$filter\"相关结果")
+                                    subject.sendMessage("未搜索到相关结果")
                                 } else if (size == 1) {
                                     handleShowMod(get(0))
                                 } else {

@@ -41,7 +41,7 @@ class ModrinthMessageHandler(
                             val pagedList = service.search(projectType, filter)
                             with(pagedList.current()) {
                                 if (isEmpty()) {
-                                    subject.sendMessage("未搜索到关键字\"$filter\"相关结果")
+                                    subject.sendMessage("未搜索到相关结果")
                                 } else if (size == 1) {
                                     handleShowProject(get(0))
                                 } else {
