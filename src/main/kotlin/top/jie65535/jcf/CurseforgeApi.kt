@@ -32,6 +32,11 @@ class CurseforgeApi(apiKey: String) {
     }
 
     private val http = HttpClient(OkHttp) {
+//        engine {
+//            config {
+//                protocols(listOf(okhttp3.Protocol.HTTP_1_1))
+//            }
+//        }
         install(HttpTimeout) {
             this.requestTimeoutMillis = 60_000
             this.connectTimeoutMillis = 60_000
