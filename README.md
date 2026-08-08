@@ -22,6 +22,20 @@
 - /jcf setSubsSender \<qq\> # 设置订阅信息推送bot（qq id）
 - /jcf setCheckInterval \<seconds\> # 设置更新检查间隔（单位：秒）
 
+### 网络代理
+
+国内部署访问 CurseForge、Modrinth 或图片资源超时时，可以编辑插件配置文件
+`config/top.jie65535.jcf/JCurseforgeConfig.yml`，设置本机 HTTP 或 SOCKS 代理：
+
+```yaml
+proxyType: HTTP
+proxyHost: 127.0.0.1
+proxyPort: 7890
+```
+
+`proxyType` 可选值为 `NONE`、`HTTP`、`SOCKS`，默认为 `NONE`。修改配置后需要重启插件。
+如果 Mirai Console 运行在 Docker 容器中，`127.0.0.1` 指向容器自身，应改为宿主机可访问的地址。
+
 ### CurseForge 分类搜索命令（可配置）
 - 搜索模组: cfmod \<filter\>
 - 搜索整合包: cfpack \<filter\>
@@ -81,7 +95,7 @@
     - [x] 搜索模组、整合包、资源包、光影、插件、数据包
     - [x] 查看项目详情与版本列表
     - [x] 订阅项目更新通知
-- [ ] 设置代理
+- [x] 设置代理
 
 
 ## 鸣谢

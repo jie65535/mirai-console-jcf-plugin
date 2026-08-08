@@ -17,6 +17,7 @@ import top.jie65535.jcf.model.mod.*
 import top.jie65535.jcf.model.request.*
 import top.jie65535.jcf.model.request.SortOrder.*
 import top.jie65535.jcf.model.response.*
+import top.jie65535.jcf.util.ProxySupport
 
 /**
  * [Api docs](https://docs.curseforge.com/)
@@ -32,11 +33,11 @@ class CurseforgeApi(apiKey: String) {
     }
 
     private val http = HttpClient(OkHttp) {
-//        engine {
-//            config {
-//                protocols(listOf(okhttp3.Protocol.HTTP_1_1))
-//            }
-//        }
+        engine {
+            config {
+                ProxySupport.configure(this)
+            }
+        }
         install(HttpTimeout) {
             this.requestTimeoutMillis = 60_000
             this.connectTimeoutMillis = 60_000

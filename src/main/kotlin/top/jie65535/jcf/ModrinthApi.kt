@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
 import top.jie65535.jcf.model.modrinth.Project
 import top.jie65535.jcf.model.modrinth.SearchResponse
 import top.jie65535.jcf.model.modrinth.Version
+import top.jie65535.jcf.util.ProxySupport
 
 /**
  * HTTP client for the Modrinth API. No API key is required for read operations.
@@ -28,6 +29,11 @@ class ModrinthApi {
     }
 
     private val http = HttpClient(OkHttp) {
+        engine {
+            config {
+                ProxySupport.configure(this)
+            }
+        }
         install(HttpTimeout) {
             this.requestTimeoutMillis = 60_000
             this.connectTimeoutMillis = 60_000

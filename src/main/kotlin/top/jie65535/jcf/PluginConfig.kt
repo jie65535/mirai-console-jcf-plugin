@@ -8,6 +8,15 @@ object PluginConfig : AutoSavePluginConfig("JCurseforgeConfig") {
     @ValueDescription("Curseforge API KEY")
     var apiKey: String by value()
 
+    @ValueDescription("网络代理类型（NONE、HTTP、SOCKS）")
+    var proxyType: ProxyType by value(ProxyType.NONE)
+
+    @ValueDescription("网络代理主机")
+    var proxyHost: String by value("127.0.0.1")
+
+    @ValueDescription("网络代理端口")
+    var proxyPort: Int by value(7890)
+
     @ValueDescription("搜索命令 (MODS,MODPACKS,RESOURCE_PACKS,WORLDS,BUKKIT_PLUGINS,ADDONS,CUSTOMIZATION)")
     val searchCommands: MutableMap<MinecraftService.ModClass, String> by value(
         mutableMapOf(
@@ -44,4 +53,10 @@ object PluginConfig : AutoSavePluginConfig("JCurseforgeConfig") {
      */
     @ValueDescription("检查间隔（单位：秒）")
     var checkInterval: Long by value(60 * 60 * 4L)
+}
+
+enum class ProxyType {
+    NONE,
+    HTTP,
+    SOCKS,
 }

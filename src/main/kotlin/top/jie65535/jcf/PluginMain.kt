@@ -6,12 +6,13 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.utils.info
+import top.jie65535.jcf.util.ProxySupport
 
 object PluginMain: KotlinPlugin(
     JvmPluginDescription(
         id = "top.jie65535.jcf",
         name = "J Curseforge Util",
-        version = "1.2.1",
+        version = "1.2.2",
     ) {
         author("jie65535")
         info("MC Curseforge & Modrinth Util\n" +
@@ -39,6 +40,13 @@ object PluginMain: KotlinPlugin(
         PluginData.reload()
         PluginConfig.reload()
         PluginCommands.register()
+
+        val proxyValidationError = ProxySupport.validationError()
+        if (proxyValidationError != null) {
+            logger.warning(proxyValidationError)
+        } else if (PluginConfig.proxyType != ProxyType.NONE) {
+            logger.info("网络请求将使用代理：${ProxySupport.description()}")
+        }
 
         val eventChannel = GlobalEventChannel.parentScope(this)
 

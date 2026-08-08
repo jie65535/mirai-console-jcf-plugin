@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "top.jie65535.jcf"
-version = "1.2.1"
+version = "1.2.2"
 
 repositories {
     maven("https://maven.aliyun.com/repository/public")
